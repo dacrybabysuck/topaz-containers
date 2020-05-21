@@ -1,0 +1,26 @@
+FROM ubuntu:18.04 as builder
+
+ARG GIT_REPO=https://github.com/project-topaz/topaz.git
+ARG GIT_BRANCH=release
+
+RUN apt-get update; \
+    apt-get install -y git libmariadb-dev-compat libluajit-5.1-dev libzmq3-dev autoconf pkg-config zlib1g-dev libssl-dev; \
+    git clone --recursive ${GIT_REPO} ;
+
+RUN cd topaz; \
+    git checkout ${GIT_BRANCH}; \
+    sh autogen.sh; \
+    ./configure --enable-debug=gdb; \
+    make -j $(nproc);
+
+FROM alpine:latest
+RUN apk update; \
+    apk add bash mysql-client
+
+WORKDIR /topaz
+COPY --from=builder /topaz/sql ./sql
+COPY build.sh .
+
+VOLUME ["/topaz/sql_backup"]
+
+CMD ["bash", "build.sh"]

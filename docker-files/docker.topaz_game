@@ -1,0 +1,35 @@
+FROM ubuntu:18.04 as builder
+
+ARG GIT_REPO=https://github.com/project-topaz/topaz.git
+ARG GIT_BRANCH=release
+
+RUN apt-get update; \
+    apt-get install -y git libmariadb-dev-compat libluajit-5.1-dev libzmq3-dev autoconf pkg-config zlib1g-dev libssl-dev; \
+    git clone --recursive ${GIT_REPO} ;
+
+RUN cd topaz; \
+    git checkout ${GIT_BRANCH}; \
+    sh autogen.sh; \
+    ./configure --enable-debug=gdb; \
+    make -j $(nproc);
+
+FROM ubuntu:18.04
+RUN apt-get update; \
+    apt-get install -y libmariadb-dev-compat libluajit-5.1-dev libzmq3-dev;
+
+WORKDIR /topaz
+
+COPY --from=builder /topaz/topaz_game .
+COPY --from=builder /topaz/compress.dat .
+COPY --from=builder /topaz/decompress.dat .
+COPY --from=builder /topaz/scripts ./scripts
+COPY --from=builder /topaz/log ./log
+COPY --from=builder /topaz/lib ./lib
+COPY --from=builder /topaz/lib64 ./lib64
+COPY --from=builder /topaz/navmeshes ./navmeshes
+
+VOLUME /topaz/scripts
+
+EXPOSE 54230/udp
+
+CMD ["./topaz_game"]

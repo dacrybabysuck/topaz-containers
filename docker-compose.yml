@@ -1,0 +1,87 @@
+version: '3.7'
+services:
+  game:
+    build:
+      context: .
+      dockerfile: docker-files/docker.topaz_game
+      args:
+        GIT_REPO: ${GIT_REPO}
+        GIT_BRANCH: ${GIT_BRANCH}
+    restart: unless-stopped
+    volumes:
+      - ${TOPAZ_CONF}:/topaz/conf
+      - ${TOPAZ_LOG}:/topaz/log
+      - ${TOPAZ_SCRIPTS}:/topaz/scripts
+    depends_on:
+      - ipupdate
+    links:
+      - db
+    ports:
+      - "54230:54230/udp"
+  connect:
+    build:
+      context: .
+      dockerfile: docker-files/docker.topaz_connect
+      args:
+        GIT_REPO: ${GIT_REPO}
+        GIT_BRANCH: ${GIT_BRANCH}
+    restart: unless-stopped
+    volumes:
+      - ${TOPAZ_CONF}:/topaz/conf
+      - ${TOPAZ_LOG}:/topaz/log
+    depends_on:
+      - ipupdate
+    links:
+      - db
+    ports:
+      - "54230:54230/tcp"
+      - "54231:54231"
+      - "54001:54001"
+  search:
+    build:
+      context: .
+      dockerfile: docker-files/docker.topaz_search
+      args:
+        GIT_REPO: ${GIT_REPO}
+        GIT_BRANCH: ${GIT_BRANCH}
+    restart: unless-stopped
+    volumes:
+      - ${TOPAZ_CONF}:/topaz/conf
+      - ${TOPAZ_LOG}:/topaz/log
+    depends_on:
+      - ipupdate
+    links:
+      - db
+    ports:
+      - "54002:54002"
+  ipupdate:
+    build:
+      context: .
+      dockerfile: docker-files/docker.ipupdate
+    depends_on:
+      - db
+    links:
+      - db
+    env_file:
+      - .env
+  dbupdate:
+    build:
+      context: .
+      dockerfile: docker-files/docker.dbupdate
+    depends_on:
+      - db
+    links:
+      - db
+    volumes:
+      - ${SQL_BACKUP}:/topaz/sql_backup
+    env_file:
+      - .env
+  db:
+    image: mariadb:latest
+    restart: unless-stopped
+    volumes:
+      - ${TOPAZ_DB}:/var/lib/mysql
+    ports:
+      - "23055:3306"
+    env_file:
+      - .env
