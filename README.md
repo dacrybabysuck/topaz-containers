@@ -4,7 +4,7 @@
 
 create a .env file to define some passwords and paths
 
-```
+```properties
 MYSQL_PASSWORD=password
 MYSQL_ROOT_PASSWORD=password
 MYSQL_DATABASE=tpzdb
@@ -24,9 +24,33 @@ GIT_BRANCH=release
 ```
 
 ### Initial Deployment
-if this is an initial deployment.  Either remove the following from `docker-compose.override.yml`
+if this is an initial deployment, remove the following from `docker-compose.override.yml`
 
 ```dockerfile
   dbupdate:
     entrypoint: ["echo", "service dbupdate is disabled"]
 ``` 
+
+### Configuring the conf files
+
+The compose file has 4 running containers: `game`, `connect`, `search` and `db`.  The most important thing to configure is inside of each conf file to change the default databse server from 127.0.0.1 to reference the container name of `db`. Here are some things to look out for:
+
+#### map.conf, login.conf, search_server.conf
+```conf
+#--------------------------------
+#SQL parameters
+#--------------------------------
+
+mysql_host:      db
+mysql_port:      3306
+mysql_login:     topaz
+mysql_password:  password
+mysql_database:  tpzdb
+```
+
+#### map.conf, login.conf
+```
+#Central message server settings (ensure these are the same on both all map servers and the central (lobby) server
+msg_server_port: 54003
+msg_server_ip: connect
+```
