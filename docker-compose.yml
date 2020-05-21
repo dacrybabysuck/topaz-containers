@@ -68,6 +68,9 @@ services:
     build:
       context: .
       dockerfile: docker-files/docker.dbupdate
+      args:
+        GIT_REPO: ${GIT_REPO}
+        GIT_BRANCH: ${GIT_BRANCH}
     depends_on:
       - db
     links:
