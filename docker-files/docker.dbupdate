@@ -15,7 +15,8 @@ RUN cd topaz; \
 
 FROM alpine:latest
 RUN apk update; \
-    apk add bash mysql-client
+    apk add bash mysql-client; \
+    mkdir /topaz/scripts
 
 WORKDIR /topaz
 COPY --from=builder /topaz/sql ./sql
