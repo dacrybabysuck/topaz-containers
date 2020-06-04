@@ -44,7 +44,7 @@ if [ -f "${backupFolder}".tar.bz2 ]; then
      rm -rf "${backupFolder}"
 fi
 
-cd sql
+cd /topaz/sql
 for f in *.sql
   do
      echo -n "Importing $f into the database..."
@@ -54,3 +54,13 @@ for f in *.sql
 mysql -hdb -u "${MYSQL_USER}" -p"${MYSQL_PASSWORD}" "${MYSQL_DATABASE}" < accounts_sessions.sql && echo "Success"
 mysql -hdb -u "${MYSQL_USER}" -p"${MYSQL_PASSWORD}" "${MYSQL_DATABASE}" < accounts_parties.sql && echo "Success"
 mysql -hdb -u "${MYSQL_USER}" -p"${MYSQL_PASSWORD}" "${MYSQL_DATABASE}" < triggers.sql && echo "Success"
+
+if [[ -d /topaz/sql/custom && -f /topaz/scripts/globals/settings.lua ]]; then
+  cd /topaz/sql/custom
+  for f in *.sql
+    do
+     if grep -i -q "$(echo "$f" | cut -f 1 -d '.') = 1" /topaz/scripts/globals/settings.lua; then
+       mysql -hdb -u "${MYSQL_USER}" -p"${MYSQL_PASSWORD}" "${MYSQL_DATABASE}" < $f && echo "Success"
+     fi
+    done
+fi
