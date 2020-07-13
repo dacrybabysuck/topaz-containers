@@ -25,12 +25,16 @@ backupTable char_merit
 backupTable char_pet
 backupTable char_points
 backupTable char_profile
+backupTable char_recast
 backupTable char_skills
 backupTable char_spells
 backupTable char_stats
 backupTable char_storage
+backupTable char_style
+backupTable char_unlocks
 backupTable char_vars
 backupTable conquest_system
+backupTable server_variables
 backupTable delivery_box
 backupTable linkshells
 

@@ -9,13 +9,14 @@ services:
         GIT_BRANCH: ${GIT_BRANCH}
     restart: unless-stopped
     volumes:
-      - ${TOPAZ_CONF}:/topaz/conf
       - ${TOPAZ_LOG}:/topaz/log
       - ${TOPAZ_SCRIPTS}:/topaz/scripts
     depends_on:
       - ipupdate
-    links:
-      - db
+    networks:
+      topaz:
+    env_file:
+      - .env
     ports:
       - "54230:54230/udp"
   connect:
@@ -27,12 +28,13 @@ services:
         GIT_BRANCH: ${GIT_BRANCH}
     restart: unless-stopped
     volumes:
-      - ${TOPAZ_CONF}:/topaz/conf
       - ${TOPAZ_LOG}:/topaz/log
     depends_on:
       - ipupdate
-    links:
-      - db
+    networks:
+      topaz:
+    env_file:
+      - .env
     ports:
       - "54230:54230/tcp"
       - "54231:54231"
@@ -46,12 +48,13 @@ services:
         GIT_BRANCH: ${GIT_BRANCH}
     restart: unless-stopped
     volumes:
-      - ${TOPAZ_CONF}:/topaz/conf
       - ${TOPAZ_LOG}:/topaz/log
     depends_on:
       - ipupdate
-    links:
-      - db
+    networks:
+      topaz:
+    env_file:
+      - .env
     ports:
       - "54002:54002"
   ipupdate:
@@ -60,8 +63,8 @@ services:
       dockerfile: docker-files/docker.ipupdate
     depends_on:
       - db
-    links:
-      - db
+    networks:
+      topaz:
     env_file:
       - .env
   dbupdate:
@@ -73,8 +76,8 @@ services:
         GIT_BRANCH: ${GIT_BRANCH}
     depends_on:
       - db
-    links:
-      - db
+    networks:
+      topaz:
     volumes:
       - ${SQL_BACKUP}:/topaz/sql_backup
       - ${TOPAZ_SCRIPTS}:/topaz/scripts
@@ -87,5 +90,9 @@ services:
       - ${TOPAZ_DB}:/var/lib/mysql
     ports:
       - "23055:3306"
+    networks:
+      - topaz
     env_file:
       - .env
+networks:
+  topaz:
