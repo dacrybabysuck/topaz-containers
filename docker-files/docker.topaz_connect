@@ -1,10 +1,10 @@
 FROM ubuntu:18.04 as builder
 
-ARG GIT_REPO=https://github.com/project-topaz/topaz.git
-ARG GIT_BRANCH=release
-
 RUN apt-get update; \
     apt-get install -y git libmariadb-dev-compat libluajit-5.1-dev libzmq3-dev autoconf pkg-config zlib1g-dev libssl-dev;
+
+ARG GIT_REPO=https://github.com/project-topaz/topaz.git
+ARG GIT_BRANCH=release
 
 RUN git clone --recursive ${GIT_REPO} ;
 
