@@ -6,7 +6,7 @@ RUN apt-get update; \
 ARG GIT_REPO=https://github.com/project-topaz/topaz.git
 ARG GIT_BRANCH=release
 
-RUN git clone --recursive ${GIT_REPO} ;
+RUN git clone --recursive ${GIT_REPO} topaz;
 
 RUN cd topaz; \
     git checkout ${GIT_BRANCH}; \
