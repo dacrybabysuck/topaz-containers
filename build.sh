@@ -6,37 +6,17 @@ timestamp=$(date +%s%N)
 backupFolder=sql_backup/${timestamp}
 mkdir -p "${backupFolder}"
 
+declare -a BackupTables=("auction_house" "chars" "accounts" "accounts_banned" "char_effects" "char_equip" "char_exp" "char_inventory" "char_jobs" "char_look" "char_merit" "char_pet" "char_points" "char_profile" "char_recast" "char_skills" "char_spells" "char_stats" "char_storage" "char_style" "char_unlocks" "char_vars" "conquest_system" "server_variables" "delivery_box" "linkshells")
+
+
 function backupTable {
-     rm sql/"${1}".sql
-     mysqldump -e --hex-blob -hdb -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" "${MYSQL_DATABASE}" "${1}" > "${backupFolder}"/"${1}".sql
+     mysqldump -e --hex-blob -hdb --no-create-info -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" "${MYSQL_DATABASE}" "${1}" > "${backupFolder}"/"${1}".sql
 }
 
-backupTable auction_house
-backupTable chars
-backupTable accounts
-backupTable accounts_banned
-backupTable char_effects
-backupTable char_equip
-backupTable char_exp
-backupTable char_inventory
-backupTable char_jobs
-backupTable char_look
-backupTable char_merit
-backupTable char_pet
-backupTable char_points
-backupTable char_profile
-backupTable char_recast
-backupTable char_skills
-backupTable char_spells
-backupTable char_stats
-backupTable char_storage
-backupTable char_style
-backupTable char_unlocks
-backupTable char_vars
-backupTable conquest_system
-backupTable server_variables
-backupTable delivery_box
-backupTable linkshells
+for val in ${BackupTables[@]}; do
+   backupTable $val
+done
+
 
 if [[ -e sql/char_merits.sql ]]; then
   rm sql/char_merits.sql
