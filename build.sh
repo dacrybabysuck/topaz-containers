@@ -20,7 +20,7 @@ function restoreTable {
 }
 
 echo -n "Backing full database..."
-mysqldump -e --hex-blob -hdb --skip-triggers --no-create-info -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" "${MYSQL_DATABASE}" > "${backupFolder}"/fulldb.sql && echo "Success"
+mysqldump -e --hex-blob -hdb --add-drop-database --add-drop-table --add-drop-trigger -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" "${MYSQL_DATABASE}" > "${backupFolder}"/fulldb.sql && echo "Success"
 
 for val in ${BackupTables[@]}; do
    backupTable $val
@@ -41,9 +41,9 @@ done
 
 tar -jcvf "${backupFolder}".tar.bz2 "${backupFolder}"
 
-#if [ -f "${backupFolder}".tar.bz2 ]; then
-#     rm -rf "${backupFolder}"
-#fi
+if [ -f "${backupFolder}".tar.bz2 ]; then
+     rm -rf "${backupFolder}"
+fi
 
 pushd /topaz/sql
 mysql -hdb -u "${MYSQL_USER}" -p"${MYSQL_PASSWORD}" "${MYSQL_DATABASE}" < accounts_sessions.sql && echo "Success"
