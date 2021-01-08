@@ -10,7 +10,7 @@ declare -a BackupTables=("auction_house" "accounts" "chars" "accounts_banned" "c
 
 function backupTable {
      echo -n "Backing up table ${1}..."
-     mysqldump -e --hex-blob -hdb --skip-triggers --no-create-info -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" "${MYSQL_DATABASE}" "${1}" > "${backupFolder}"/"${1}".sql && echo "Success"
+     mysqldump -e --hex-blob -hdb --skip-triggers --complete-insert --no-create-info -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" "${MYSQL_DATABASE}" "${1}" > "${backupFolder}"/"${1}".sql && echo "Success"
 }
 
 function restoreTable {
