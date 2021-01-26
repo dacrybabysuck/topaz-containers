@@ -1,7 +1,11 @@
 FROM ubuntu:18.04 as builder
 
 RUN apt-get update; \
-    apt-get install -y software-properties-common cmake libmariadb-dev-compat libluajit-5.1-dev libzmq3-dev zlib1g-dev libssl-dev build-essential git;
+    apt-get install -y software-properties-common; \
+    add-apt-repository ppa:ubuntu-toolchain-r/test; \
+    apt-get update; \
+    apt-get install -y software-properties-common cmake libmariadb-dev-compat libluajit-5.1-dev libzmq3-dev zlib1g-dev \
+                       gcc-9 g++-9 libssl-dev build-essential git;
 
 ARG GIT_REPO=https://github.com/project-topaz/topaz.git
 ARG GIT_BRANCH=release
@@ -10,8 +14,8 @@ RUN git clone --recursive ${GIT_REPO} topaz;
 
 RUN cd topaz; \
     git checkout ${GIT_BRANCH}; \
-    export CC=/usr/bin/gcc ;\
-    export CXX=/usr/bin/g++ ;\
+    export CC=/usr/bin/gcc-9 ;\
+    export CXX=/usr/bin/g++-9 ;\
     CFLAGS=-m64 CXXFLAGS=-m64 LDFLAGS=-m64 cmake . ;\
     make -j $(nproc);
 
